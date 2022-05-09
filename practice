@@ -1,0 +1,59 @@
+PythonでTwitterのデータを分析してみた。毛利
+
+#ライブラリのインポート
+import pandas as pd
+import re
+import seaborn as sns
+import matplotlib.pyplot as plt
+import japanize_matplotlib
+#csvデータの読み込み
+df = pd.read_csv('tweet_data.csv')
+#ツイート内容のデータからハッシュタグを取り出す
+hash_lists = df['ツイート内容'].apply(lambda x:re.findall(r"#\S*", str(x)))
+#リストを一つにまとめる
+merge_list = []
+for hash_list in hash_lists:
+    if hash_list:
+        merge_list = merge_list + hash_list
+
+
+#リスト型をpandasのSeries型に変換
+Se_hash = pd.Series(merge_list)
+
+
+#それぞれのハッシュタグの出現回数
+df_hash = Se_hash.value_counts()
+#df_hashをSeries => DataFrameに変換する
+df_hash = df_hash.reset_index(name='Num').set_axis(['unique_hash','Num'],axis='columns')
+
+
+#プロットする範囲だけ抽出
+x_values=df_hash['unique_hash'][0:19]
+y_values=df_hash['Num'][0:19]
+fig,ax = plt.subplots(1,1,figsize=(16,8),facecolor='white',linewidth=1,edgecolor='black')
+sns.barplot(x=x_values,y=y_values,palette="Greens_r",ax=ax)
+
+
+#グラフのタイトルをつける
+ax.set_title('Python_ハッシュタグ分析')
+#y軸の範囲を決める
+ax.set_ylim(0,1100)
+#軸のタイトルを決める
+ax.set_xlabel('ハッシュタグ',fontsize=14)
+ax.set_ylabel('使われた回数',fontsize=14)
+#軸ラベルの書式設定
+ax.tick_params(axis='x',labelrotation=90,labelsize=10)
+ax.tick_params(axis='y',labelsize=14)
+#グラフの下に20%の空白を入れる
+fig.subplots_adjust(bottom=0.35)
+
+
+#データラベルを表示
+cnt = 0
+for y_value in y_values:
+    plt.text(x=cnt,y=y_value+1,s=str(y_value),horizontalalignment="center",fontsize=12)
+    cnt += 1 
+#画像を保存
+fig.savefig('twitter.png')
+
+
