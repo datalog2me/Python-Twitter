@@ -25,3 +25,40 @@ def Get_Retweeters(tweet_id):
 
 # 関数実行・結果出力
 pprint(Get_Retweeters(tweet_id))
+
+
+
+
+
+
+
+特定のツイートから、いいねしたユーザー情報取得してみた。毛利
+
+# ★ツイートIDを指定
+tweet_id = 'ツイートIDを指定する'
+
+def Get_Liking_Users(tweet_id):
+    # メソッド実行
+    users = ClientInfo().get_liking_users(id=int(tweet_id)).data
+    
+    # 結果加工
+    result = []
+    if users !=  None:
+        for i in range(len(users)):
+            obj = {}
+            obj["user_id"]  = users[i].id
+            obj["name"]     = users[i].name
+            obj["username"] = users[i].username
+            result.append(obj)
+    else:
+        result.append("")
+    
+    
+    # 出力
+    return result
+
+pprint(Get_Liking_Users(tweet_id))
+
+
+
+
